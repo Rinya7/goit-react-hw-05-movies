@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { Outlet, NavLink } from 'react-router-dom';
 import { filmsFromApiById } from '../../data/filmsFromApi';
 import { useState, useEffect } from 'react';
@@ -9,6 +9,9 @@ import defaultImage from '../../images/not-found-image.jpg';
 const MovieDetails = () => {
   const { movieId } = useParams();
   const [filmById, setFilmById] = useState('');
+
+  const location = useLocation();
+  const backLink = location.state?.from ?? '/';
 
   useEffect(() => {
     FilmInfo(movieId);
@@ -26,7 +29,7 @@ const MovieDetails = () => {
   return (
     <main>
       <Conteiner>
-        <BackLick to="/">Back</BackLick>
+        <BackLick to={backLink}>Back</BackLick>
         <br></br>
         {filmById && (
           <img
