@@ -8,8 +8,8 @@ import Loader from '../../components/Loader/Loader';
 const Cast = () => {
   const { movieId } = useParams();
   const [filmCastList, setFilmCastList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
 
   useEffect(() => {
     FilmCast(movieId);
@@ -21,7 +21,7 @@ const Cast = () => {
       const { cast } = await castFromApiById(id);
       setFilmCastList(cast);
     } catch (error) {
-      setIsError(true);
+      setIsError(error.message);
     } finally {
       setIsLoading(false);
     }

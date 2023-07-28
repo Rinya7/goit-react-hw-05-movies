@@ -12,50 +12,51 @@ import { useState } from 'react';
 import { searchFilmsFromApi } from '../../data/filmsFromApi';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
-//import { useSearchParams } from 'react-router-dom';
+const MoviesList = lazy(() => import('../../components/MoviesList/MoviesList'));
 
-const ListFilmFromApp = lazy(() =>
-  import('../../components/ListFilmFromApp/ListFilmFromApp')
-);
 const Movies = () => {
   const [listFilmsBySearch, setListFilmsBySearch] = useState([]);
+  const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState(null);
   const [searchMovies, setSearchMovies] = useSearchParams();
   const query = searchMovies.get('query');
 
   useEffect(() => {
-    !query && setSearchMovies({});
-  }, [query, setSearchMovies]);
+    if (!query) {
+      return;
+    }
+    const HomePageRender = async () => {
+      setIsLoading(true);
+
+      try {
+        const { results } = await searchFilmsFromApi(query);
+
+        if (results.length > 0) {
+          setListFilmsBySearch(results);
+        } else {
+          alert('Sorry we dont found films with you request');
+        }
+      } catch (error) {
+        setIsError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    HomePageRender(query);
+  }, [query, searchMovies]);
 
   const handleInputSearch = evt => {
     const { value } = evt.currentTarget;
-    setSearchMovies({ query: value });
+    setValue(value);
   };
 
-  const HomePageRender = async search => {
-    setListFilmsBySearch([]);
-    setIsLoading(true);
-    setIsError(false);
-    try {
-      const { results } = await searchFilmsFromApi(search);
-      if (results.length > 0) {
-        setListFilmsBySearch(results);
-      } else {
-        alert('Sorry we dont found films with you request');
-      }
-    } catch (error) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const hundelSearchSubmit = evt => {
     evt.preventDefault();
-    if (!query || query.trim() === '') {
+    if (value.trim() === '') {
       return alert('Input what you search');
     }
-    HomePageRender(query);
+    setSearchMovies({ query: value });
   };
 
   return (
@@ -71,7 +72,7 @@ const Movies = () => {
             type="text"
             autocomplete="off"
             autoFocus
-            value={!query ? '' : query}
+            value={value}
             placeholder="Search film"
             onChange={handleInputSearch}
           />
@@ -81,10 +82,7 @@ const Movies = () => {
       {isError && <p>Oops..Somesing went wrong..</p>}
 
       {listFilmsBySearch.length > 0 && (
-        <ListFilmFromApp
-          list={listFilmsBySearch}
-          query={query}
-        ></ListFilmFromApp>
+        <MoviesList list={listFilmsBySearch} query={value}></MoviesList>
       )}
     </main>
   );

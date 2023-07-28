@@ -6,8 +6,8 @@ import Loader from '../../components/Loader/Loader';
 const Rewiews = () => {
   const { movieId } = useParams();
   const [filmRewiewsList, setFilmRewiewsList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
 
   useEffect(() => {
     FilmCast(movieId);
@@ -19,17 +19,17 @@ const Rewiews = () => {
       const { results } = await rewiewsFromApiById(id);
       setFilmRewiewsList(results);
     } catch (error) {
-      setIsError(true);
+      setIsError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
-  console.log('filmRewiewsList', filmRewiewsList);
+
   return (
     <>
       {isError && <p>Oops..Somesing went wrong..</p>}
       {isLoading && <Loader></Loader>}
-      {filmRewiewsList.length > 0 && (
+      {filmRewiewsList.length > 0 ? (
         <ul>
           {filmRewiewsList.map(({ author, id, content }) => (
             <li key={id}>
@@ -39,6 +39,8 @@ const Rewiews = () => {
             </li>
           ))}
         </ul>
+      ) : (
+        <p>No reviews</p>
       )}
     </>
   );
