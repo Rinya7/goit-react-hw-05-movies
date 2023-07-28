@@ -1,7 +1,7 @@
 import { useParams, useLocation } from 'react-router-dom';
 import { Outlet, NavLink } from 'react-router-dom';
 import { filmsFromApiById } from '../../data/filmsFromApi';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AditionLi, BackLick, Conteiner } from './MovieDetals.styled';
 import { Suspense } from 'react';
 import defaultImage from '../../images/not-found-image.jpg';
@@ -11,7 +11,7 @@ const MovieDetails = () => {
   const [filmById, setFilmById] = useState('');
 
   const location = useLocation();
-  const backLink = location.state?.from ?? '/';
+  const backLink = useRef(location.state?.from ?? '/');
 
   useEffect(() => {
     FilmInfo(movieId);
@@ -29,7 +29,7 @@ const MovieDetails = () => {
   return (
     <main>
       <Conteiner>
-        <BackLick to={backLink}>Back</BackLick>
+        <BackLick to={backLink.current}>Back</BackLick>
         <br></br>
         {filmById && (
           <img

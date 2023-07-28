@@ -82,7 +82,7 @@ const Movies = () => {
       {isError && <p>Oops..Somesing went wrong..</p>}
 
       {listFilmsBySearch.length > 0 && (
-        <MoviesList list={listFilmsBySearch} query={value}></MoviesList>
+        <MoviesList list={listFilmsBySearch}></MoviesList>
       )}
     </main>
   );
